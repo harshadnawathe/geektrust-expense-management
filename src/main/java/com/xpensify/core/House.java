@@ -38,10 +38,10 @@ public class House  implements HouseApi {
   @Override
   public void spend(double amount, String spentByMember, String... spentForMembers)
       throws HouseMemberNotFoundException, HouseNeedsMoreMembersForExpenseTrackingException {
-    checkHouseContainsEnoughMembersForExpenseTracking();
-
     String[] sharedByMembers = ArrayUtils.add(spentForMembers, spentByMember);
     checkIfMembersArePresentInHouse(sharedByMembers);
+    
+    checkHouseContainsEnoughMembersForExpenseTracking();
 
     members.get(spentByMember).spend(amount);
 

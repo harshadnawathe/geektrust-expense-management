@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -18,7 +17,8 @@ public class XpensifyIntegrationTests {
   @ParameterizedTest
   @CsvSource({
       "'./sample_input/input1.txt', './sample_input/output1.txt'",
-      "'./sample_input/input2.txt', './sample_input/output2.txt'"
+      "'./sample_input/input2.txt', './sample_input/output2.txt'",
+      "'./sample_input/input3.txt', './sample_input/output3.txt'"
   })
   void parseFileAndPrintOutput(String inputFilePath, String expectedOutputFilePath) {
     String[] args = new String[] { inputFilePath };
