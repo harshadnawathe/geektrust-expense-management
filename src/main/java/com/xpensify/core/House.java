@@ -29,7 +29,8 @@ public class House  implements HouseApi {
   }
 
   @Override
-  public MemberDues dues(String memberName) {
+  public MemberDues dues(String memberName) throws HouseMemberNotFoundException {
+    checkIfMembersArePresentInHouse(memberName);
     Dues dues = new Dues(this.members.values());
     return dues.of(memberName);
   }
@@ -61,7 +62,7 @@ public class House  implements HouseApi {
   }
 
   @Override
-  public void clearDue(String memberName, String lentByMemberName, double amount)
+  public AmountDue clearDue(String memberName, String lentByMemberName, double amount)
       throws HouseMemberNotFoundException, IncorrectSettlementAmount {
     checkIfMembersArePresentInHouse(memberName, lentByMemberName);
 
@@ -76,6 +77,8 @@ public class House  implements HouseApi {
 
     member.spend(amount);
     lentByMember.borrow(amount);
+
+    return dues(memberName).amountDue(lentByMemberName);
   }
 
   private void checkHouseIsNotFull() throws HousefulException {
@@ -84,9 +87,9 @@ public class House  implements HouseApi {
     }
   }
 
-  private void checkIfMembersArePresentInHouse(String... spentForMembers) throws HouseMemberNotFoundException {
-    Optional<String> nonMember = Arrays.stream(spentForMembers)
-        .filter(memberName -> !members.containsKey(memberName))
+  private void checkIfMembersArePresentInHouse(String... memberNames) throws HouseMemberNotFoundException {
+    Optional<String> nonMember = Arrays.stream(memberNames)
+        .filter(memberName -> !this.members.containsKey(memberName))
         .findFirst();
     if (nonMember.isPresent()) {
       throw new HouseMemberNotFoundException(nonMember.get());

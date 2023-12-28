@@ -7,10 +7,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.converter.SimpleArgumentConverter;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import lombok.SneakyThrows;
 
 class HouseTest {
 
@@ -43,8 +44,9 @@ class HouseTest {
   @DisplayName("when new member moves in")
   class HouseMoveInTest {
 
+    @SneakyThrows
     @Test
-    void incrementNumberOfMembers() throws HousefulException {
+    void incrementNumberOfMembers() {
       House house = new House(3);
       int numberOfMembers = house.getNumberOfMembers();
 
@@ -54,8 +56,9 @@ class HouseTest {
       assertThat(numberOfMembersAfterMoveIn).isEqualTo(numberOfMembers + 1);
     }
 
+    @SneakyThrows
     @Test
-    void throwExceptionWhenHouseIsAtFullCapacity() throws HousefulException {
+    void throwExceptionWhenHouseIsAtFullCapacity() {
       House house = new House(2);
       house.moveIn("ANDY");
       house.moveIn("WOODY");
@@ -65,8 +68,9 @@ class HouseTest {
       }).isInstanceOf(HousefulException.class).hasMessage("house is at full capacity");
     }
 
+    @SneakyThrows
     @Test
-    void newMemberHasNoDuesAgainstOtherMembersInTheHouse() throws HousefulException {
+    void newMemberHasNoDuesAgainstOtherMembersInTheHouse() {
       House house = new House(3);
       house.moveIn("ANDY");
       String newMemberName = "WOODY";
@@ -84,6 +88,7 @@ class HouseTest {
   @DisplayName("when member spends")
   class HouseMemberSpendTest {
 
+    @SneakyThrows
     @ParameterizedTest
     @CsvSource({
         "ANDY, 'BO, WOODY', WOODY",
@@ -92,7 +97,7 @@ class HouseTest {
     void throwExceptionIfMemberNotFound(
         String spentByMember,
         @ConvertWith(StringArrayConverter.class) String[] spentForMembers,
-        String unknownMemberName) throws HousefulException {
+        String unknownMemberName) {
       House house = new House(2);
       house.moveIn("ANDY");
       house.moveIn("BO");
@@ -103,8 +108,9 @@ class HouseTest {
           .hasFieldOrPropertyWithValue("memberName", unknownMemberName);
     }
 
+    @SneakyThrows
     @Test
-    void throwExceptionWhenMinimumMembersForExpenseTrackingAreNotFound() throws HousefulException {
+    void throwExceptionWhenMinimumMembersForExpenseTrackingAreNotFound() {
       House house = new House(2);
       house.moveIn("ANDY");
 
@@ -114,9 +120,9 @@ class HouseTest {
           .hasMessage("house need more members for expense tracking");
     }
 
+    @SneakyThrows
     @Test
-    void dueIsCreatedAgainstSpentForMembers()
-        throws HouseMemberNotFoundException, HouseNeedsMoreMembersForExpenseTrackingException, HousefulException {
+    void dueIsCreatedAgainstSpentForMembers() {
       House house = new House(3);
       house.moveIn("ANDY");
       house.moveIn("WOODY");
@@ -132,12 +138,29 @@ class HouseTest {
   }
 
   @Nested
+  class HouseDuesTest {
+
+    @SneakyThrows
+    @Test
+    void throwExceptionIfMemberNotFound() {
+      House house = new House(3);
+      house.moveIn("ANDY");
+
+      assertThatThrownBy(() -> {
+        house.dues("UNKNOWN");
+      }).isInstanceOf(HouseMemberNotFoundException.class)
+          .hasMessage("member not found in the house");
+    }
+
+  }
+
+  @Nested
   @DisplayName("when member moves out")
   class HouseMemberMoveOutTest {
 
+    @SneakyThrows
     @Test
-    void decrementNumberOfMembers()
-        throws HousefulException, HouseMemberNotFoundException, HouseMemberHasUnsettledDuesException {
+    void decrementNumberOfMembers() {
       House house = new House(2);
       house.moveIn("ANDY");
       house.moveIn("WOODY");
@@ -147,8 +170,9 @@ class HouseTest {
       assertThat(house.getNumberOfMembers()).isEqualTo(1);
     }
 
+    @SneakyThrows
     @Test
-    void throwExceptionWhenMemberNotFound() throws HousefulException {
+    void throwExceptionWhenMemberNotFound() {
       House house = new House(2);
       house.moveIn("ANDY");
 
@@ -159,9 +183,10 @@ class HouseTest {
           .hasFieldOrPropertyWithValue("memberName", "WOODY");
     }
 
+    @SneakyThrows
     @Test
     void throwExceptionWhenMemberHasUnsettledDues()
-        throws HousefulException, HouseMemberNotFoundException, HouseNeedsMoreMembersForExpenseTrackingException {
+        {
       House house = new House(3);
       house.moveIn("ANDY");
       house.moveIn("WOODY");
@@ -181,13 +206,14 @@ class HouseTest {
   @DisplayName("when member clear dues")
   class HouseMemberClearDuesTest {
 
+    @SneakyThrows
     @ParameterizedTest
     @CsvSource({
         "WOODY, BO, BO",
         "BO, ANDY, BO"
     })
     void throwExceptionWhenMemberNotFound(String memberName, String lentByMemberName, String unknownMemberName)
-        throws HousefulException, HouseMemberNotFoundException, HouseNeedsMoreMembersForExpenseTrackingException {
+        {
       House house = new House(3);
       house.moveIn("ANDY");
       house.moveIn("WOODY");
@@ -200,9 +226,10 @@ class HouseTest {
           .hasFieldOrPropertyWithValue("memberName", unknownMemberName);
     }
 
+    @SneakyThrows
     @Test
     void throwExceptionWhenSettlementAmountIsMoreThanAmountDue()
-        throws HousefulException, HouseMemberNotFoundException, HouseNeedsMoreMembersForExpenseTrackingException {
+        {
       House house = new House(3);
       house.moveIn("ANDY");
       house.moveIn("WOODY");
@@ -215,21 +242,25 @@ class HouseTest {
           .hasFieldOrPropertyWithValue("amountDue", 1500.0);
     }
 
+    @SneakyThrows
     @ParameterizedTest
     @CsvSource({
         "1500, 0",
         "1000, 500"
     })
-    void settleDueWithAnotherMember(double amountToSettle, double expectedDue)
-        throws HousefulException, HouseMemberNotFoundException, HouseNeedsMoreMembersForExpenseTrackingException,
-        IncorrectSettlementAmount {
+    void settleDueWithAnotherMember(double amountToSettle, double expectedDue) {
       House house = new House(3);
       house.moveIn("ANDY");
       house.moveIn("WOODY");
       house.spend(3000, "ANDY", "WOODY");
 
-      house.clearDue("WOODY", "ANDY", amountToSettle);
+      AmountDue amountDue = house.clearDue("WOODY", "ANDY", amountToSettle);
 
+      //Return amaout due
+      assertThat(amountDue.getLentByMember()).isEqualTo("ANDY");
+      assertThat(amountDue.getAmount()).isEqualTo(expectedDue);
+      
+      //Settle dues
       MemberDues woodyDues = house.dues("WOODY");
       assertThat(woodyDues.amountDue("ANDY")).isEqualTo(new AmountDue("ANDY", expectedDue));
     }
@@ -240,7 +271,7 @@ class HouseTest {
 class StringArrayConverter extends SimpleArgumentConverter {
 
   @Override
-  protected Object convert(Object source, Class<?> targetType) throws ArgumentConversionException {
+  protected Object convert(Object source, Class<?> targetType) {
     if (source instanceof String && String[].class.isAssignableFrom(targetType)) {
       return ((String) source).split("\\s*,\\s*");
     } else {
