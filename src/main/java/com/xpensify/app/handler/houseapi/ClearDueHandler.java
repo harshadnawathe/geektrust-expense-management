@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ClearDueHandler implements CommandHandler {
+  private static final int MEMBER_NAME_POSITION = 0;
+  private static final int LENT_BY_MEMBER_NAME = 1;
+  private static final int AMOUT_POSITION = 2;
   private final HouseApi api;
 
   @Override
@@ -20,9 +23,9 @@ public class ClearDueHandler implements CommandHandler {
 
   @Override
   public void doHandle(Command cmd) {
-    String memberName = cmd.getArguments().get(0);
-    String lentByMemberName = cmd.getArguments().get(1);
-    double amount = Double.parseDouble(cmd.getArguments().get(2));
+    String memberName = cmd.getArguments().get(MEMBER_NAME_POSITION);
+    String lentByMemberName = cmd.getArguments().get(LENT_BY_MEMBER_NAME);
+    double amount = Double.parseDouble(cmd.getArguments().get(AMOUT_POSITION));
 
     try {
       AmountDue amountDue = api.clearDue(memberName, lentByMemberName, amount);

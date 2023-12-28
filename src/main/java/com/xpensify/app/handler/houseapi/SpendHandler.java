@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class SpendHandler implements CommandHandler {
+  private static final int AMOUNT_POSITION = 0;
+  private static final int SPENT_BY_MEMBER = 1;
+  private static final int SPENT_FOR_MEMBERS_START_POSITION = 2;
   private final HouseApi api;
 
   @Override
@@ -21,9 +24,10 @@ public class SpendHandler implements CommandHandler {
 
   @Override
   public void doHandle(Command cmd) {
-    double amount = Double.parseDouble(cmd.getArguments().get(0));
-    String spentByMember = cmd.getArguments().get(1);
-    List<String> spentForMembers = cmd.getArguments().subList(2, cmd.getArguments().size());
+    double amount = Double.parseDouble(cmd.getArguments().get(AMOUNT_POSITION));
+    String spentByMember = cmd.getArguments().get(SPENT_BY_MEMBER);
+    List<String> spentForMembers = cmd.getArguments().subList(SPENT_FOR_MEMBERS_START_POSITION,
+        cmd.getArguments().size());
 
     try {
       api.spend(amount, spentByMember, spentForMembers.toArray(new String[0]));

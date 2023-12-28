@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MoveOutHandler implements CommandHandler {
 
+  private static final int MEMBER_NAME_POSITION = 0;
   private final HouseApi api;
 
   @Override
@@ -20,7 +21,7 @@ public class MoveOutHandler implements CommandHandler {
 
   @Override
   public void doHandle(Command cmd) {
-    String memberName = cmd.getArguments().get(0);
+    String memberName = cmd.getArguments().get(MEMBER_NAME_POSITION);
 
     try {
       api.moveOut(memberName);
