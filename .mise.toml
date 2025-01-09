@@ -1,6 +1,4 @@
 [tools]
-java = '11'
+java = 'corretto-11.0.21.9.1'
 gradle = '5.1'
 
-[alias.java]
-11 = 'corretto-11.0.21.9.1'
